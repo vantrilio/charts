@@ -4,7 +4,7 @@ var config = {
     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     datasets: [{
       type: 'line',
-      lineTension: '0.3',
+      lineTension: '0',
       label: 'Liquidity',
       data: [65, 10, -10, 54, 56, 85, 40, 50, 60, 50],
       borderColor: 'rgba(46,85,115)',
@@ -31,6 +31,17 @@ var config = {
         stacked: true
       }]
     },
+    tooltips: {
+     backgroundColor: '#FFF',
+     titleFontSize: 16,
+     titleFontColor: 'rgba(46,85,115)',
+     bodyFontColor: '#000',
+     bodyFontSize: 14,
+     width:10,
+     borderColor: 'rgba(46,85,115)',
+     borderWidth: 1,
+     displayColors: false
+   },
     annotation: {
       annotations: [{
         type: 'line',
@@ -40,8 +51,9 @@ var config = {
         borderColor: 'rgb(255,98,0)',
         borderWidth: 2,
         label: {
-          enabled: false,
-          content: 'Test label'
+          enabled: true,
+          content: 'Headroom',
+          
         }
       }],
     }
