@@ -4,7 +4,7 @@ var config = {
     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     datasets: [{
       type: 'line',
-      lineTension: '0',
+      lineTension: '0.3',
       label: 'Liquidity',
       data: [65, 10, -10, 54, 56, 85, 40, 50, 60, 50],
       borderColor: 'rgba(46,85,115)',
@@ -53,7 +53,7 @@ var config = {
         label: {
           enabled: true,
           content: 'Headroom',
-          
+
         }
       }],
     }
