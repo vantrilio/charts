@@ -1,9 +1,0 @@
-{
-	"region": "eu-central-1",
-	"redirectUriSignIn": "http://localhost:8081",
-	"redirectUriSignOut": "http://localhost:8081",
-	"jsonrpcEndpoint": "http://localhost:8080/rpc",
-	"clientId": "1oght7lkoaod6n5sufrvgcos8l",
-	"userPoolId": "eu-central-1_zwsNlbgL9",
-	"appWebDomain": "growth-navigator.auth.eu-central-1.amazoncognito.com"
-}
