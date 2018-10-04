@@ -1,30 +1,31 @@
 var config = {
   type: 'bar',
   data: {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     datasets: [{
       type: 'line',
       lineTension: '0.3',
       label: 'Liquidity',
-      data: [65, 10, -10, 54, 56, 85, 40],
-      borderColor: 'rgba(111,207,195)',
+      data: [65, 10, -10, 54, 56, 85, 40, 50, 60, 50],
+      borderColor: 'rgba(46,85,115)',
       fill: false
     }, {
       type: 'bar',
       label: 'Payables',
       backgroundColor: 'rgba(111,207,195, 0.2)',
-      data: [65, 40, 80, 81, 56, 85, 40],
+      data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50],
     }, {
       type: 'bar',
       label: 'Receivables',
       backgroundColor: 'rgba(255,98,0, 0.2)',
-      data: [-65, -60, -80, -81, -56, -85, -40]
+      data: [-65, -60, -80, -81, -56, -85, -40, -40, -30, -40]
     }]
   },
   options: {
     scales: {
       xAxes: [{
-        stacked: true
+        stacked: true,
+        barPercentage: 0.5
       }],
       yAxes: [{
         stacked: true
