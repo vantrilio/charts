@@ -1,0 +1,29 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-welcome">
+	<template>
+	    <style include="shared-styles">
+	      :host {
+	        display: block;
+	        padding: 10px 20px;
+			color: var(--app-primary-color);
+	      }
+		  h1 {
+			  padding-top: 50px;
+			  text-align: center;
+		  }
+	    </style>
+		<h1>Optimize your Working Capital</h1>
+	</template>
+
+	<script>
+		class GncWelcome extends Polymer.Element {
+			static get is() {
+				return 'gnc-welcome';
+			}
+		}
+		window.customElements.define(GncWelcome.is, GncWelcome);
+	</script>
+</dom-module>

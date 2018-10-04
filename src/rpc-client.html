@@ -1,0 +1,96 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="rpc-client">
+	<template>
+ 		<iron-ajax
+ 				id="ajax"
+ 				auto
+ 				url="[[ jsonrpcEndpoint ]]?[[ method]]"
+ 				method="post"
+				headers="[[ headers ]]"
+ 				body="[[ rpc ]]"
+ 				handle-as="json"
+ 				content-type="application/json;charset=UTF-8"
+ 				on-response="_handleAjaxResponse"
+				on-error="_handleAjaxError"
+ 				debounce-duration="300">
+ 		</iron-ajax>
+ 	</template>
+
+	<script>
+
+		var timeout;
+		/**
+		 * Fires an <code>rpc-result</code> event when a good result arrives, or <code>rpc-error</code>
+		 * on error.
+		 */
+		class RpcClient extends Polymer.Element {
+			static get is() {
+				return 'rpc-client';
+			}
+			static get properties() {
+				return {
+					// attributes
+					method: String,
+					params: [],
+					idToken: String,
+					// evaluated properties
+					lastId: Number,
+					rpc: String,
+					jsonrpcEndpoint: String,
+					timeout: Number
+				}
+			}
+			static get observers() {
+				return [
+					'_rpcCmdChanged(method, params)'
+				]
+			}
+			_rpcCmdChanged() {
+				this.lastId = Date.now();
+				const idToken = localStorage.getItem('X-ID-Token');
+				this.headers = {
+					'X-ID-Token': idToken || ''
+				};
+				this.jsonrpcEndpoint = localStorage.getItem('gnc.jsonrpcEndpoint');
+				this.rpc = JSON.stringify({
+					id: this.lastId,
+					jsonrpc: '2.0',
+					method: this.method,
+					params: this.params
+				});
+			}
+			_handleAjaxResponse(resp) {
+				const rpcResp = resp.detail.response;
+				if (rpcResp.jsonrpc !== "2.0" || rpcResp.id !== this.lastId || rpcResp.error) {
+					this.dispatchEvent(new CustomEvent('rpc-error', {
+						detail: rpcResp.error,
+						bubbles: true,
+						composed: true
+					}));
+					return;
+				}
+				this.dispatchEvent(new CustomEvent('rpc-result', {
+					detail: rpcResp.result,
+					bubbles: true,
+					composed: true
+				}));
+			}
+			_handleAjaxError(ev) {
+				if (timeout) {
+					Polymer.Async.timeOut.cancel(timeout);
+				}
+				timeout = Polymer.Async.timeOut.run(() => {
+					Polymer.Async.timeOut.cancel(timeout);
+					this.dispatchEvent(new CustomEvent('rpc-error', {
+						detail: {},
+						bubbles: true,
+						composed: true
+					}));
+				}, 50);
+			}
+		}
+		window.customElements.define(RpcClient.is, RpcClient);
+	</script>
+</dom-module>

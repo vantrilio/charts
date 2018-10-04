@@ -1,0 +1,343 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-button-group/paper-button-group.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="gnc-detail-table.html">
+<link rel="import" href="gnc-liquidity-graph.html">
+<link rel="import" href="gnc-liquidity-graph4.html">
+<link rel="import" href="rpc-client.html">
+
+<dom-module id="gnc-liquidity-forecast">
+	<template>
+		<style include="iron-flex"></style>
+	    <style include="shared-styles">
+	        :host {
+	            font-size: var(--app-font-size);
+	        }
+	        .flex-horizontal {
+	            @apply --layout-horizontal;
+				margin-top: 20px;
+	        }
+	        .flexchild {
+	            @apply --layout-flex;
+	        }
+	        a {
+	        	/*font-family: 'Open Sans', sans-serif;*/
+	        	font-size: var(--app-font-size);
+	        	color: var(--app-primary-color);
+	        	text-transform: none;
+	        }
+	        a:hover {
+	        	color: var(--app-secondary-color);
+	        }
+	        h4 {
+	        	font-weight: normal;
+	        	font-size: 12px;
+	        }
+			.graph-control-panel {
+				margin: 50px 0 auto 0;
+			}
+	        .horizon {
+	        	font-size: var(--paper-font-caption_-_font-size);
+	        }
+	        .prefix {
+				/*font-family: 'Montserrat', sans-serif;*/
+	        	color: var(--app-primary-color);
+	        }
+			gnc-detail-table {
+				height: 0;
+				transition: height 1s;
+				overflow: hidden;
+				margin-top: 30px;
+			}
+			gnc-detail-table.open {
+				height: 500px;
+			}
+			paper-button {
+				border: 1px var(--app-primary-color) solid;
+				padding: 0.3em 0.57em;
+				font-family: "INGMe", Arial, sans-serif;
+				text-transform: none;
+			}
+			paper-button[active] {
+				background: var(--app-primary-color);
+				color: var(--app-white-color);
+			}
+			.center-justified {
+				text-align: center;
+			}
+	    </style>
+
+		<div class="container flex-vertical">
+			<template is="dom-if" if="[[ _showControls() ]]">
+				<div class="flexchild center-justified">
+					<paper-button-group selected="{{ horizon }}">
+						<template is="dom-repeat" items="[[ horizons ]]">
+							<paper-button>
+								[[ item.horizon ]]
+							</paper-button>
+						</template>
+					</paper-button-group>
+				</div>
+			</template>
+			<div class="flexchild">
+				<gnc-liquidity-graph4
+					graph-data="[[ graphData ]]"
+					series-label="[[ seriesLabel ]]"
+					draw-graph="[[ drawGraph ]]"
+					graph-height="[[ _getGraphHeight() ]]"
+					on-coordinate-selected="_onCoordinateSelectedC3">
+				</gnc-liquidity-graph4>
+			</div>
+		</div>
+		<gnc-detail-table id="details"
+			row-data="[[ details ]]"
+			label="[[ detailLabel ]]"
+			description="[[ detailDescription ]]">
+		</gnc-detail-table>
+	</template>
+
+	<script>
+		const NON_DIGIT_RE = /[^\d-]/g;
+		var t0;
+
+		class GncLiquidityForecast extends Polymer.Element {
+			static get is() {
+				return 'gnc-liquidity-forecast';
+			}
+			static get properties() {
+				return {
+					drawGraph: String,
+					mode: String,
+					accounts: Object,
+					forecast: Object,
+
+					// private properties - detail table
+					details: Array,
+					detailLabel: String,
+					detailDescription: String,
+
+					// private properties - graph
+					header: Object,
+					graphData: Object,
+					seriesLabel: String,
+					hackeyTimeStamp: Number,
+
+					// private computed
+					headroom: String,
+					horizon: Number,
+					horizonLabel: String,
+					lastLabel: String
+				};
+			}
+			static get observers() {
+				return [
+					'_formDataChanged(headroom, horizon, graphData)',
+					'_forecastChanged(forecast, horizon)'
+				];
+			}
+			static truncateArrays(obj, limit) {
+				const res = {};
+				Object.keys(obj).forEach(key => {
+					res[key] = obj[key].filter((item, idx) => idx < limit);
+				});
+				return res;
+			}
+			ready() {
+				this.horizon = 0;
+				super.ready();
+				this.horizons = [{
+						"horizon": "2 weeks",
+						"seriesLabel": "days",
+						"unitLabel": "day",
+						"numPeriods": 15,
+						"key": "valuesByDay"
+					},
+					{
+						"horizon": "one month",
+						"seriesLabel": "days",
+						"unitLabel": "day",
+						"numPeriods": 31,
+						"key": "valuesByDay"
+					},
+					{
+						"horizon": "3 months",
+						"seriesLabel": "weeks",
+						"unitLabel": "week",
+						"numPeriods": 13,
+						"key": "valuesByWeek"
+					}
+				];
+				this.header = [{
+						"label": "Receivables",
+						"key": "receivables",
+						"plotType": null,
+						"color": "#2e5573"
+					},
+					{
+						"label": "Payables",
+						"key": "payables",
+						"plotType": null,
+						"color": "#6fcfc3"
+					},
+					{
+						"label": "Liquidity",
+						"key": "liquidity",
+						"plotType": "line",
+						"color": "#fb3"
+					},
+					{
+						"label": "Headroom",
+						"key": "headroom",
+						"plotType": "lineDash",
+						"color": "#e33"
+					}
+				];
+			}
+			_formDataChanged(headroomIn, horizonIn, graphData) {
+				console.log('headroomIn, horizonIn, graphData', headroomIn, horizonIn, graphData);
+				if ((typeof horizonIn === 'number' || typeof this.horizon === 'number') && this.horizons) {
+					if (typeof horizonIn === 'number' && this.lasthorizon !== horizonIn) {
+						console.log('switching horizon', horizonIn);
+						this.lasthorizon = horizonIn;
+						// const graphHorizon = 13 + 2 * (horizonIn - 1);
+						// if (horizonIn) {
+						// 	this.horizonLabel = graphHorizon + ' ' + this.horizons[2].seriesLabel;
+						// 	this.seriesLabel = this.horizons[2].seriesLabel;
+						// } else {
+						// 	this.horizonLabel = this.horizons[0].horizon;
+						// 	this.seriesLabel = this.horizons[0].seriesLabel;
+						// }
+						// if (this.data) {
+						// 	if (horizonIn) {
+						// 		this.__mergeHeadroom(GncLiquidityForecast.truncateArrays(this.data[2], graphHorizon + 1));
+						// 	} else {
+						// 		this.__mergeHeadroom(this.data[0]);
+						// 	}
+						// }
+					}
+				}
+				var headroom;
+				if (typeof headroomIn === 'string') {
+					headroom = parseInt(headroomIn.replace(NON_DIGIT_RE, ''), 10);
+				}
+				if (!isNaN(headroom) && this.graphData) {
+					if (this.lastHeadroom !== headroom) {
+						this.lastHeadroom = headroom;
+						if (Math.abs(headroom) > 1000) {
+							graphData.headroom = graphData[this.header[0].key].map(() => headroom);
+						} else {
+							graphData.headroom = graphData[this.header[0].key].map(() => null);
+						}
+						if (t0) {
+							Polymer.Async.timeOut.cancel(t0);
+						}
+						t0 = Polymer.Async.timeOut.run(() => {
+							Polymer.Async.timeOut.cancel(t0);
+							this.hackeyTimeStamp = Date.now();
+							this.graphData = graphData;
+						}, 400);
+					}
+				}
+			}
+			_onCoordinateSelectedC3(ev) {
+				const index = ev.detail.index;
+				const mapKey = ev.detail.id.toLowerCase();
+				if (this.mode === 'dashboard') {
+					this.dispatchEvent(new CustomEvent('dashboard-item-zoom', {
+						detail: {
+							panel: 'graph',
+							data: {
+								index,
+								mapKey
+							}
+						},
+						bubbles: true,
+						composed: true
+					}));
+					return;
+				}
+				return;
+				this.detailLabel = 'Week ' + index + ' ' + ev.detail.name;
+				if (this.lastLabel === this.detailLabel) {
+					this.$.details.setAttribute('class', '');
+					this.lastLabel = '';
+					return;
+				}
+				this.lastLabel = this.detailLabel;
+				if (mapKey === 'receivables') {
+					this.detailDescription = 'Receivables in week ' + index;
+					this.details = this.accounts.receivables;
+					this.$.details.setAttribute('class', 'open');
+				} else if (mapKey === 'payables') {
+					this.detailDescription = 'Payables in week ' + index;
+					this.details = this.accounts.payables;
+					this.$.details.setAttribute('class', 'open');
+				} else {
+					this.$.details.setAttribute('class', '');
+				}
+			}
+			_onCoordinateSelected(ev) {
+				ev.preventDefault();
+				if (!ev.detail.coordinate || ev.detail.coordinate.column > 2) {
+					this.$.details.setAttribute('class', '');
+					return false;
+				}
+				const period = typeof ev.detail.coordinate.row === 'number' ?
+					this.horizons[2].unitLabel + ' ' + ev.detail.coordinate.row :
+					'all';
+				this.detailLabel = this.header[ev.detail.coordinate.column - 1].label + ' ' + period;
+				this.details = ['receivables'].indexOf(this.header[ev.detail.coordinate.column - 1].key) > -1 ?
+					this.receivables : this.payables;
+				this.$.details.setAttribute('class', 'open');
+			}
+			_forecastChanged(forecast, horizonIn) {
+				if (typeof horizonIn !== 'number' || !this.horizons) {
+					return;
+				}
+				const horizon = this.horizons[horizonIn];
+				const series  = this.forecast[horizon.key];
+				const longestSeriesLength = Math.min(horizon.numPeriods, series.liquidity.length, series.payables.length, series.receivables.length);
+				const truncatedSeries = {
+					liquidity: [],
+					payables: [],
+					receivables: []
+				};
+				for (let i = 0; i < longestSeriesLength; i++) {
+					truncatedSeries.liquidity.push(series.liquidity[i]);
+					truncatedSeries.payables.push(series.payables[i]);
+					truncatedSeries.receivables.push(series.receivables[i]);
+				}
+				this.seriesLabel = horizon.seriesLabel;
+				this.graphData = truncatedSeries;
+			}
+			_onPayablesReceived(ev) {
+				this.payables = ev.detail;
+			}
+			_onReceivablesReceived(ev) {
+				this.receivables = ev.detail;
+			}
+			__mergeHeadroom(graphData) {
+				// const key = Object.keys(graphData);
+				// const headroom = this.headroom ? parseInt(this.headroom.replace(NON_DIGIT_RE, ''), 10) : 0;
+				// if (Math.abs(headroom) > 1000) {
+				// 	graphData.headroom = graphData[key].map(() => headroom);
+				// } else {
+				// 	graphData.headroom = graphData[key].map(() => null);
+				// }
+				// this.graphData = graphData;
+			}
+			_getGraphHeight() {
+				return this.mode === 'zoomedin' ? 413 : 320;
+			}
+			_showControls() {
+				return this.mode === 'zoomedin';
+			}
+		}
+		window.customElements.define(GncLiquidityForecast.is, GncLiquidityForecast);
+	</script>
+</dom-module>

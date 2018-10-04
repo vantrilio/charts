@@ -1,0 +1,153 @@
+<!--
+This component is based on the official AWS Auth library managed by Crystal Wang:
+ https://github.com/aws/amazon-cognito-auth-js/
+ -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="cognito-auth-button">
+	<!-- <template>
+		<style include="shared-styles">
+			:host {
+				display: block;
+			}
+		</style>
+
+		<paper-button id="signInButton">[[ label ]]</paper-button>
+
+	</template> -->
+
+	<script>
+		class CognitoAuthButton extends Polymer.Element {
+			static get is() {
+				return 'cognito-auth-button';
+			}
+			static get properties() {
+				return {
+					poolId: String,
+					tokenScopesArray: String,
+					identityProvider: String,
+					signInLabel: String,
+					signOutLabel: String,
+					label: String,
+					auth: {
+						type: Object,
+						value: () => ({})
+					},
+					response: {
+						type: Object,
+						notify: true
+					}
+				};
+			}
+
+			// ready() {
+			// 	super.ready();
+			// 	const auth = this.getAuth();
+			// 	// Event listeners
+			// 	this.$.signInButton.addEventListener("click", () => {
+			// 		this._userButton(auth);
+			// 	});
+			// }
+			getAuth() {
+				AWS.config.region = localStorage.getItem('gnc.region');
+				// Initiatlize CognitoAuth object
+				var auth = this.initCognitoSDK();
+				// Get cached Session if exists
+				if (auth.getCachedSession().isValid()) {
+					this.showSignedIn(auth.getCachedSession());
+				}
+				if (this.label === undefined) {
+					this.label = this.signInLabel;
+				}
+				var curUrl = window.location.href;
+				auth.parseCognitoWebResponse(curUrl);
+				localStorage.setItem('X-ID-Token', auth.signInUserSession.idToken.getJwtToken());
+				return auth;
+			}
+			// Perform user operations.
+			_userButton(auth) {
+				if (this.label === this.signOutLabel) {
+					auth.signOut();
+					localStorage.setItem('X-ID-Token', '');
+					this.showSignedOut();
+				} else {
+					// get current or new auth session
+					auth.getSession();
+				}
+			}
+			// Operations when signed in.
+			showSignedIn(session) {
+				this.label = this.signOutLabel;
+				if (session) {
+					var idToken = session.getIdToken().getJwtToken();
+					localStorage.setItem('X-ID-Token', idToken);
+					if (idToken) {
+						// parse the idToken and get the current identity
+						var payload = idToken.split('.')[1];
+						var formatted = JSON.parse(atob(payload));
+						//  this.response = formatted;
+						//  window.signedInUser = formatted;
+						//console.log('formatted', formatted);
+					}
+					var accToken = session.getAccessToken().getJwtToken();
+					if (accToken) {
+						// do something with the access token
+						//console.log('accToken', accToken);
+					}
+					var refToken = session.getRefreshToken().getToken();
+					if (refToken) {
+						// do something with the refresh token
+						//console.log('refToken', refToken);
+					}
+				}
+			}
+			formatToken(token) {
+				var payload = token.split('.')[1];
+				var tokenobj = JSON.parse(atob(payload));
+				var formatted = JSON.stringify(tokenobj, undefined, 2);
+				return formatted;
+			}
+			// Operations when signed out.
+			showSignedOut() {
+				this.label = this.signInLabel;
+			}
+			/**
+			 *	Initialize a cognito auth object.
+			 */
+			initCognitoSDK() {
+				var authData = {
+					TokenScopesArray: this.tokenScopesArray.split(','),
+					IdentityProvider: this.identityProvider,
+					AdvancedSecurityDataCollectionFlag: false
+				};
+				authData.ClientId = localStorage.getItem('gnc.clientId');
+				authData.AppWebDomain = localStorage.getItem('gnc.appWebDomain');
+				authData.RedirectUriSignIn = localStorage.getItem('gnc.redirectUriSignIn');
+				authData.RedirectUriSignOut = localStorage.getItem('gnc.redirectUriSignOut');
+				authData.UserPoolId = localStorage.getItem('gnc.userPoolId');
+				var auth = new AmazonCognitoIdentity.CognitoAuth(authData);
+
+				auth.userhandler = {
+					onSuccess: result => {
+						let idToken = result.getIdToken().getJwtToken();
+						let accToken = result.getAccessToken().getJwtToken();
+						let id = this.formatToken(idToken);
+						let access = this.formatToken(accToken);
+						this.showSignedIn(result);
+						localStorage.setItem('X-ID-Token', idToken);
+						this.dispatchEvent(new CustomEvent('user-signed-in', { detail: { idToken } }));
+					},
+					onFailure: err => {
+						console.log("ON FAILURE: " + err);
+					}
+				};
+				// The default response_type is "token", uncomment the next line will make it be "code".
+				auth.useCodeGrantFlow();
+				return auth;
+			}
+		}
+		window.customElements.define(CognitoAuthButton.is, CognitoAuthButton);
+	</script>
+</dom-module>

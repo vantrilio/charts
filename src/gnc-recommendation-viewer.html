@@ -1,0 +1,49 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="gnc-icons.html">
+<link rel="import" href="gnc-recommendation-detail.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-recommendation-viewer">
+	<template>
+	    <style include="shared-styles">
+		    :host {
+		        display: block;
+		        padding: 0;
+		    }
+			.card {
+				margin: 0;
+			}
+	    </style>
+		<div class="card">
+			<template is="dom-repeat" items="[[ recommendations ]]">
+				<gnc-recommendation-detail recommendation="[[ item ]]" show-detail="[[ _isShowDetails(item, selectedId) ]]"><gnc-recommendation-detail>
+			</template>
+		</div>
+	</template>
+
+	<script>
+		class GncRecommendationViewer extends Polymer.Element {
+			static get is() {
+				return 'gnc-recommendation-viewer';
+			}
+			static get properties() {
+				return {
+					// attributes
+					recommendations: Array,
+					selectedId: String,
+
+					// calculated
+					recommendation: Object,
+					showDetail: Boolean
+				}
+			}
+			_isShowDetails(item, id) {
+				return item.id === id;
+			}
+		}
+
+		window.customElements.define(GncRecommendationViewer.is, GncRecommendationViewer);
+	</script>
+</dom-module>

@@ -1,0 +1,95 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="gnc-currency-formatter.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-accounts-panel">
+	<template>
+		<style include="iron-flex"></style>
+		<style include="iron-flex-factors"></style>
+	    <style include="shared-styles">
+		    :host {
+		        display: block;
+		    }
+			.row {
+				min-height: 5em;
+				border-bottom: 1px var(--app-hairline-color) solid;
+				margin-top: 1em;
+			}
+			.rank {
+				width: 60px;
+				font-size: 40px;
+				line-height: 1.5;
+				font-weight: 700;
+				color: var(--app-hairline-color);
+				text-align: center;
+			}
+			.name {
+				color: var(--app-primary-color);
+				font-weight: 700;
+			}
+			.duedays {
+				position: relative;
+				left: .7em;
+				width: 3.5em;
+				height: 3.5em;
+				text-align: center;
+				border-radius: 50%;
+				background: var(--app-white-color);
+				box-shadow: 0 0 8px rgba(80, 80, 80, .1);
+				font-size: 110%;
+				font-weight: 700;
+				line-height: 3.5em;
+			}
+			.flexchild {
+    			@apply --layout-flex;
+    		}
+	    </style>
+		<template is="dom-repeat" items="[[ rowData ]]">
+			<div class="layout horizontal row">
+				<div class="rank">
+					[[ _showIndexAsRank(index) ]]
+				</div>
+				<div class="layout vertical flexchild">
+					<div class="name">
+						{{ item.party.companyContactName }}
+					</div>
+					<div>
+						€ <gnc-currency-formatter input="[[ item.amount ]]"></gnc-currency-formatter>
+					</div>
+				</div>
+				<div class$="duedays [[ _priorityClass(item.priority) ]]">
+					[[ _dueDays(item.dueDate) ]]
+				</div>
+			</div>
+		</template>
+	</template>
+
+	<script>
+		const priorityClass = ['', 'info', 'warning', 'danger'];
+
+		class GncAccountsPanel extends Polymer.Element {
+			static get is() {
+				return 'gnc-accounts-panel';
+			}
+			static get properties() {
+				return {
+					rowData: Array
+				}
+			}
+			_priorityClass(prio) {
+				return priorityClass[parseInt(prio || 0)];
+			}
+			_dueDays(d) {
+				const timeDiff = Date.now() - Date.parse(d);
+				return -1 * Math.ceil(timeDiff / (1000 * 3600 * 24));
+			}
+			_showIndexAsRank(idx) {
+				return idx + 1;
+			}
+		}
+
+		window.customElements.define(GncAccountsPanel.is, GncAccountsPanel);
+	</script>
+</dom-module>

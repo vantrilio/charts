@@ -1,68 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
-  <head>
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="Polymer Starter Kit">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<title>Growth-Navigator</title>
+	<meta name="description" content="Optimize your Working Capital">
 
-    <title>Bare - Start Bootstrap Template</title>
+	<!--
+      The `<base>` tag below is present to support two advanced deployment options:
+      1) Differential serving. 2) Serving from a non-root path.
 
-    <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      Note: If you intend to serve from a non-root path, see [polymer-root-path] below.
+    -->
+	<base href="/">
 
-  </head>
+	<link rel="icon" href="images/favicon.ico">
 
-  <body>
+	<!-- See https://goo.gl/OOhYW5 -->
+	<link rel="manifest" href="manifest.json">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-      <div class="container">
-        <a class="navbar-brand" href="#">Start Bootstrap</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+	<!-- See https://goo.gl/qRE0vM -->
+	<meta name="theme-color" content="#2e5573">
 
-    <!-- Page Content -->
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h1 class="mt-5">A Bootstrap 4 Starter Template</h1>
-          <p class="lead">Complete with pre-defined file paths and responsive navigation!</p>
-          <ul class="list-unstyled">
-            <li>Bootstrap 4.1.3</li>
-            <li>jQuery 3.3.1</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+	<!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="Growth-Navigator">
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<!-- Add to homescreen for Safari on iOS -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Growth-Navigator Customer Web App">
 
-  </body>
+	<!-- Homescreen icons -->
+	<link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
+
+	<!-- Tile icon for Windows 8 (144x144 + tile color) -->
+	<meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png">
+	<meta name="msapplication-TileColor" content="#2e5573">
+	<meta name="msapplication-tap-highlight" content="no">
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-125946534-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-125946534-1');
+	</script>
+	<!-- Google Tag Manager -->
+	<script>
+		window.dataLayer = [{}];
+	</script>
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-KPR6F8R');</script>
+	<!-- End Google Tag Manager -->
+	<script src="lib/aws-sdk.min.js"></script>
+	<script src="lib/amazon-cognito-auth.min.js"></script>
+	<script src="lib/d3.v5.min.js" charset="utf-8"></script>
+	<script src="lib/c3.min.js"></script>
+	<script>
+		/**
+		 * [polymer-root-path]
+		 *
+		 * By default, we set `Polymer.rootPath` to the server root path (`/`).
+		 * Leave this line unchanged if you intend to serve your app from the root
+		 * path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
+		 *
+		 * If you intend to serve your app from a non-root path (e.g., with URLs
+		 * like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
+		 * to indicate the path from which you'll be serving, including leading
+		 * and trailing slashes (e.g., `/my-app/`).
+		 */
+		window.Polymer = {
+			rootPath: '/'
+		};
+
+		// Load and register pre-caching Service Worker
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+				navigator.serviceWorker.register('service-worker.js', {
+					scope: Polymer.rootPath,
+				});
+			});
+		}
+	</script>
+
+	<!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+	<script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+	<!-- Load your application shell -->
+	<link rel="import" href="src/gnc-app.html">
+
+	<!-- Add any global styles for body, document, etc. -->
+	<style>
+		* {
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+		body {
+			margin: 0;
+			font-family: 'INGMe', Arial, sans-serif;
+			line-height: 1.5;
+			min-height: 100vh;
+			background-color: #fafbfc;
+		}
+
+		@font-face {
+			font-family: "INGMe";
+			src: url("/lib/fonts/INGMeWeb-Regular.woff2") format("woff2"),
+				url("/lib/fonts/INGMeWeb-Regular.woff") format("woff"),
+				url("/lib/fonts/INGMeWeb-Regular.ttf") format("truetype"),
+				url("/lib/fonts/INGMeWeb-Regular.svg#INGMeWeb-Regular") format("svg");
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: "INGMe";
+			src: url("/lib/fonts/INGMeWeb-Bold.woff2") format("woff2"),
+				url("/lib/fonts/INGMeWeb-Bold.woff") format("woff"),
+				url("/lib/fonts/INGMeWeb-Bold.ttf") format("truetype"),
+				url("/lib/fonts/INGMeWeb-Bold.svg#INGMeWeb-Bold") format("svg");
+			font-weight: bold;
+			font-style: normal;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KPR6F8R"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+	<gnc-app></gnc-app>
+	<noscript>
+      Please enable JavaScript to view this website.
+    </noscript>
+</body>
 
 </html>

@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-about">
+	<template>
+		<style include="iron-flex"></style>
+		<style include="iron-flex-factors"></style>
+	    <style include="shared-styles">
+	      :host {
+	        display: block;
+	        padding: 10px;
+			color: var(--app-text-color);
+			font-size: 16px;
+	      }
+		  .logo {
+			  width: 25%;
+			  min-width: 200px;
+			  margin-bottom: 40px;
+		  }
+		  .flex-horizontal {
+			  @apply --layout-horizontal;
+		  }
+		  .flex {
+			  margin: 16px;
+		  }
+	    </style>
+
+		<img src="/images/logo.svg" class="logo">
+		<div class="container flex-horizontal">
+			<div class="flex-1">
+				<div>Growth-Navigator team</div>
+			</div>
+			<div class="flex-2">
+				<div>Gregory Cronie – Initiative</div>
+				<div>Veronica Filipoiu – Customers</div>
+				<div>Merijn Olsthorn – Product</div>
+				<div>Paul Etchells – Engineering</div>
+				<div>Bart Jan Engelen – Solution</div>
+				<div>Fabrizio Giuliani – Science</div>
+				<div>James Barr – Construction</div>
+			</div>
+		</div>
+	</template>
+
+	<script>
+		class GncAbout extends Polymer.Element {
+			static get is() {
+				return 'gnc-about';
+			}
+		}
+
+		window.customElements.define(GncAbout.is, GncAbout);
+	</script>
+</dom-module>

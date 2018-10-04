@@ -1,0 +1,115 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="gnc-number-formatter.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-accounts-detail">
+	<template>
+		<style include="iron-flex"></style>
+		<style include="iron-flex-factors"></style>
+	    <style include="shared-styles">
+		    :host {
+		        display: block;
+				color: var(--app-primary-color);
+		    }
+			.title {
+				color: var(--app-primary-color);
+				font-weight: 700;
+			}
+			.title > div {
+				margin: 6px 12px;
+			}
+			.row > div {
+				margin: 6px 12px;
+			}
+			.value {
+				text-align: right;
+			}
+			.layout.horizontal {
+				border-bottom: 1px var(--app-muted-color) solid;
+			}
+	    </style>
+
+		<div class="layout horizontal title">
+			<div class="flex-1">
+				Rank
+			</div>
+			<div class="flex-4">
+				Party
+			</div>
+			<div class="flex-2 value">
+				Amount
+			</div>
+			<div class="flex-2 value">
+				Terms
+			</div>
+			<div class="flex-2 value">
+				Due
+			</div>
+			<div class="flex-1 value">
+				Priority
+			</div>
+		</div>
+		<template is="dom-repeat" items="[[ rowData ]]">
+			<div class="layout horizontal row">
+				<div class="flex-1">
+					[[ _indexAsRank(index) ]]
+				</div>
+				<div class="flex-4">
+					{{ item.party.companyContactName }}
+				</div>
+				<div class="flex-2 value">
+					€ <gnc-number-formatter input="[[ item.amount ]]"></gnc-number-formatter>
+				</div>
+				<div class="flex-2 value">
+					[[ _terms(item.invoiceDate, item.dueDate) ]]d
+				</div>
+				<div class="flex-2 value">
+					[[ _dueDays(item.dueDate) ]]d
+				</div>
+				<div class="flex-1 value">
+					[[ _showStars(item.priority) ]]
+				</div>
+			</div>
+		</template>
+	</template>
+
+	<script>
+		class GncAccountsDetail extends Polymer.Element {
+			static get is() {
+				return 'gnc-accounts-detail';
+			}
+			static get properties() {
+				return {
+					rowData: Array,
+					sortFields: Array,
+					filters: Array
+				}
+			}
+			_priorityClass(prio) {
+				console.log(prio, priorityClass[parseInt(prio || 0)]);
+				return priorityClass[parseInt(prio || 0)];
+			}
+			_dueDays(d) {
+				const timeDiff = Math.abs(Date.now() - Date.parse(d));
+				return -1 * Math.ceil(timeDiff / (1000 * 3600 * 24));
+			}
+			_terms(from, to) {
+				const timeDiff = Date.parse(to) - Date.parse(from);
+				return Math.ceil(timeDiff / (1000 * 3600 * 24));
+			}
+			_showStars(num) {
+				const stars = [];
+				for (var i = 0; i < num; i++) {
+					stars.push('●');
+				}
+				return stars.join('');
+			}
+			_indexAsRank(idx) {
+				return idx + 1;
+			}
+		}
+		window.customElements.define(GncAccountsDetail.is, GncAccountsDetail);
+	</script>
+</dom-module>

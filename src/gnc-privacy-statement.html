@@ -1,0 +1,99 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-privacy-statement">
+	<template>
+	    <style include="shared-styles">
+			:host {
+			  display: block;
+			  padding: 20px 10%;
+			  color: var(--app-primary-color);
+			}
+			h1, h2 {
+				font-weight: normal;
+			}
+			h1 {
+				font-size: 1.8em;
+			}
+			h2 {
+				font-size: 1.4em;
+			}
+			a {
+				color: var(--app-text-color)
+			}
+			a:hover {
+				color: var(--app-secondary-color)
+			}
+			.scrollbox {
+				overflow-y: scroll;
+				max-height: 300px;
+				border: 1px var(--app-muted-color) solid;
+				border-radius: 4px;
+				background: var(--app-white-color);
+				padding: 10px;
+			}
+		</style>
+		<h1>Growth-Navigator Privacy Statement</h1>
+		<div class="scrollbox">
+		<h2>1. Introduction</h2>
+		<p>Growth Navigator is an initiative of ING Labs Amsterdam. Growth Navigator is an analysis and recommendation engine which assists SMEs to manage and finance their working capital.</p><p>If you visit our website or in any other way contact Growth Navigator, we may process your personal data. By “processing” we mean everything we can do with this data such as collecting, recording, storing, adjusting, organising, using, disclosing, transferring or deleting that data.</p>
+		<p>This Privacy Statement aims to explain in a simple and transparent way what personal data we gather about you and how we process it.</p>
+		<p>As Growth Navigator is a part of ING Bank N.V., please also refer to the ING Privacy Statement located at ing.com for further information about how ING processes data and your privacy rights and obligations.</p>
+		<h2>2. The type of personal data we collect</h2>
+		<p>Personal data refers to any information that tells us something about you and that we can link to you. </p>
+		<p>If you contact us, we process personal data such as your full name and email address.</p>
+		<p>If you are an SME participating in our operational pilot, while we predominantly collect non-personal information such as bank transaction data, accounts payable and accounts receivable information and any other financial data, we may process personal data, such as names and (work) email addresses of your employees.</p>
+		<h2>3. What we do with your personal data </h2>
+		<p>We only use your personal data for legitimate business reasons.</p>
+		<p>This includes:</p>
+		<ul>
+			<li>validating interest proposed goods and services to be offered by Growth Navigator</li>
+			<li>conducting operational pilots;</li>
+			<li>contacting you about Growth Navigator and Growth Navigator’s proposed initiatives; and</li>
+			<li>if necessary, to comply with our legal obligations.</li>
+		</ul>
+		<h2>4. Who we share your personal data with and why</h2>
+		<p>We may disclose personal data to third parties like regulators if required to do so by law. When we use other service providers we only share personal data that is required for a particular assignment. Service providers support us with activities like: </p>
+		<ul>
+			<li>performing certain services and operations; </li>
+			<li>designing and maintenance of internet-based tools and applications; and</li>
+			<li>preparing reports and statistics, printing materials and designing products.</li>
+		</ul>
+		<h2>Cookies</h2>
+		<p>We use cookies on our website for making the website function properly and analysing use of the website. With this information we can improve and further develop the website. We don’t use tracking cookies or similar technologies.  </p>
+		<p>A cookie is a small text file that is stored by your browser on your computer. On each subsequent visit to the website, the browser searches for cookies. If the browser finds cookies, it sends the information stored by the cookie to the website. The website downloads cookies on your computer, tablet or mobile phone which are strictly necessary for the functioning of the website, such as cookies that ensure that you can retrieve information on the website quickly, and cookies that are strictly necessary to provide a service which has explicitly been requested by you, such as a cookie that remembers your cookie settings. To download cookies that are not strictly necessary, such as cookies for gathering statistical information, Growth Navigator needs your prior consent.</p>
+		<p>If you have adjusted your cookie settings so that websites are not permitted to place cookies on your computer, the Growth Navigator  website may not be able to download the cookie which remembers whether or not you consented to the placing of cookies. If so, you will be asked to indicate your cookie preferences each time you visit the website. If you do not wish to be asked about your cookie preferences each time you visit the website, you need to adjust your browser’s cookie settings.</p>
+		<h2>6. Marketing</h2>
+		<p>We will not use your personal data for marketing or promotional purposes </p>
+		<h2>7. Data retention</h2>
+		<p>We are only allowed to keep your personal data for as long as it's still necessary for the purpose we initially required it. After this we look for feasible solutions, like archiving it. </p>
+		<h2>8. Your rights</h2>
+		<p>We respect your rights to determine how your personal information is used. These rights include:</p>
+		<ol>
+			<li>Right to access personal data: You have the right to ask us for an overview of your personal data that we process by sending an email to [email address for Project].</li>
+			<li>Right to rectify personal data: if your personal data is not correct, you can ask us to rectify your personal data by sending an email to [email address for Project].</li>
+			<li>Right to complain: Should you not be satisfied with the way we have responded to your concerns you have the right to submit a complaint to us. If you are still unhappy with our reaction to your complaint, you can escalate it to the ING Bank Data Protection Officer. You can also contact the data protection authority in your country.</li>
+		</ol>
+		<p>Please refer to the ING Privacy Statement for a full overview of your rights and how to exercise them.</p>
+		<h2>9. Changes</h2>
+		<p>We may change our Privacy Statement from time to time. The date of the last adjustment was [date]. Please check our Privacy Statement regularly for the latest version.</p>
+		<h2>10. Regulatory information</h2>
+		<p>Growth Navigator is part of ING Bank N.V. (‘ING’). ING has its statutory seat in Amsterdam at Bijlmerplein 888, 1102 MG, The Netherlands, Trade Register number 33031431. ING is regulated and licensed by the De Nederlandsche Bank (‘DNB’) and the European Central Bank (‘ECB’) for payment services. ING is also regulated and licensed by the Autoriteit Financiële Markten (‘AFM’) and regulated by the Autoriteit Consument &amp; Markt (‘ACM’). Information regarding supervision of ING can be obtained from DNB (<a href="http://www.dnb.nl/" class="Internet_20_link">www.dnb.nl</a>), AFM (<a href="http://www.afm.nl/" class="Internet_20_link">www.afm.nl</a>) or ACM (<a href="http://www.acm.nl/" class="Internet_20_link">www.acm.nl</a>).</p>
+		<div class="buttondiv">
+			<paper-button raised on-click="_returnToWebsite">Back to website</paper-button>
+		</div>
+	</template>
+
+	<script>
+		class GncPrivacyStatement extends Polymer.Element {
+			static get is() {
+				return 'gnc-privacy-statement';
+			}
+			_returnToWebsite() {
+				location.href = '/scenario';
+			}
+		}
+
+		window.customElements.define(GncPrivacyStatement.is, GncPrivacyStatement);
+	</script>
+</dom-module>

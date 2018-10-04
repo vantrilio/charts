@@ -1,0 +1,131 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-grid/app-grid-style.html">
+<link rel="import" href="gnc-actuals-row-outstanding.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-actuals">
+	<template>
+		<style include="app-grid-style"></style>
+	    <style include="shared-styles">
+		    :host {
+		        display: block;
+				--app-grid-columns: 4;
+				/* --app-grid-item-height: 20px; */
+		        padding: 10px;
+		    }
+			ul {
+				padding: 0;
+				list-style: none;
+			}
+			.item {
+				background-color: white;
+			}
+			.label, .value {
+				text-align: center;
+			}
+			.row {
+				color: var(--app-primary-color);
+			}
+			.collabel {
+				color: var(--app-primary-color);
+				text-align: center;
+				margin-bottom: 14px;
+			}
+    	</style>
+
+    	<div class="app-grid">
+        <div></div>
+        <div class="collabel">one year ago</div>
+        <div class="collabel">one month ago</div>
+        <div class="collabel">current</div>
+			<div class="row">Bank accounts balance</div>
+			<template is="dom-repeat" items="{{ actuals.balance.values }}">
+				<div class="value">[[ item ]]</div>
+			</template>
+  		</div>
+		<gnc-actuals-row-outstanding label-head="Inventory" label-sub="Amount" label-summary="Days Inventory Outstanding" rowdata="[[ actuals.inventory ]]"></gnc-actuals-row-outstanding>
+		<gnc-actuals-row-outstanding label-head="Receivables" label-sub="Amount" label-summary="Days Sales Outstanding" rowdata="[[ actuals.receivables ]]"></gnc-actuals-row-outstanding>
+		<gnc-actuals-row-outstanding label-head="Payables" label-sub="Amount" label-summary="Days Payable Outstanding" rowdata="[[ actuals.payables ]]"></gnc-actuals-row-outstanding>
+		<gnc-actuals-row-outstanding label-head="Cash Conversion Cycle", label-sub="Days" rowdata="[[ actuals.ccc ]]"></gnc-actuals-row-outstanding>
+	</template>
+
+  <script>
+    class GncActuals extends Polymer.Element {
+		static get properties() {
+			return {
+				actuals: Object
+			}
+		}
+    	static get is() {
+			return "gnc-actuals";
+		}
+		ready() {
+			super.ready();
+			this.actuals = {
+				"balance":  {
+					"values":[
+						"€ 854.772",
+						"€ (384.683)",
+						"€ 236.873"
+					],
+					"accounts": [
+						{
+							"name": "Bank of Middlestown",
+							"values":[
+								"€ 854.772",
+								"€ (384.683)",
+								"€ 236.873"
+							]
+						}
+					]
+				},
+				"inventory": {
+					"values": [
+						"€ 2.689.594",
+						"€ 2.608.691",
+						"€ 2.554.941"
+					],
+					"outstandings": [
+						"94,3",
+						"85,7",
+						"85,1"
+					]
+				},
+				"receivables": {
+					"values": [
+						"€ 3.447.048",
+						"€ 3.431.000",
+						"€ 3.208.152",
+					],
+					"outstandings": [
+						"84,6",
+						"78,9",
+						"74,8"
+					]
+				},
+				"payables": {
+					"values": [
+						"€ 724.450",
+						"€ 949.722",
+						"€ 984.748"
+					],
+					"outstandings": [
+						"25,4",
+						"31,2",
+						"32,8"
+					]
+				},
+				"ccc":  {
+					"values":[
+						"153,5",
+						"133,4",
+						"127,1"
+					]
+				}
+			};
+		}
+    }
+
+    window.customElements.define(GncActuals.is, GncActuals);
+  </script>
+</dom-module>

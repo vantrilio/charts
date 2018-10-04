@@ -1,0 +1,297 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animatable.html">
+
+<link rel="import" href="gnc-accounts-detail.html">
+<link rel="import" href="gnc-accounts-panel.html">
+<link rel="import" href="gnc-dashboard-item.html">
+<link rel="import" href="gnc-issue-viewer.html">
+<link rel="import" href="gnc-recommendation-viewer.html">
+<link rel="import" href="gnc-issues-panel.html">
+<link rel="import" href="gnc-recommendations-panel.html">
+<link rel="import" href="gnc-kpi-detail.html">
+<link rel="import" href="gnc-kpi-panel.html">
+<link rel="import" href="rpc-client.html">
+<link rel="import" href="gnc-liquidity-forecast.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="rpc-client.html">
+
+<dom-module id="gnc-scenario">
+	<template>
+	    <style include="iron-flex"></style>
+		<style include="iron-flex-factors"></style>
+	    <style include="shared-styles">
+	        :host {
+	            display: block;
+	        }
+			.flex-horizontal {
+				@apply --layout-horizontal;
+			}
+			.dialog-close {
+				float: right;
+				top: 10px;
+				font-size: calc(var(--app-font-size) * 1.15);
+				color: var(--app-primary-color);
+			}
+			.hide {
+				visibility: hidden;
+			}
+			paper-dialog.size-position, gnc-modal-page {
+				width: 100%;
+				top: -23px;
+				background-color: var(--app-palegrey-color);
+			}
+			paper-tab {
+				font-family: 'INGMe', Arial, sans-serif;
+				font-size: calc(var(--app-font-size) * 1.15);
+				color: var(--app-text-color);
+				font-weight: 700;
+			}
+			paper-tab.iron-selected {
+				color: var(--app-primary-color);
+			}
+			paper-tabs {
+				--paper-tabs-selection-bar-color: var(--app-primary-color);
+			}
+	    </style>
+
+		<rpc-client method="GetLatestScenario" on-rpc-result="_onScenarioReceived"></rpc-client>
+		<div id="dashboard">
+			<div class="flex-horizontal">
+				<div class="flex-3">
+					<gnc-dashboard-item item-title="Liquidity" panel-name="graph" on-dashboard-item-zoom="_onDashboardItemZoom">
+						<gnc-liquidity-forecast
+							draw-graph="[[ graphStateDash ]]"
+							forecast="[[ scenario.forecast ]]"
+							mode="dashboard"
+							accounts="[[ accounts ]]">
+						</gnc-liquidity-forecast>
+					</gnc-dashboard-item>
+				</div>
+				<div class="flex-1">
+					<gnc-dashboard-item item-title="KPIs" panel-name="kpis" on-dashboard-item-zoom="_onDashboardItemZoom">
+						<gnc-kpi-panel kpis="[[ scenario.kpiReport ]]"></gnc-kpi-panel>
+					</gnc-dashboard-item>
+				</div>
+			</div>
+			<div class="flex-horizontal">
+				<div class="flex-1">
+					<gnc-dashboard-item item-title="Top 10 Receivables" panel-name="receivables" on-dashboard-item-zoom="_onDashboardItemZoom">
+						<gnc-accounts-panel row-data="[[ accounts.topTenReceivables ]]"></gnc-accounts-panel>
+					</gnc-dashboard-item>
+				</div>
+				<div class="flex-1">
+					<gnc-dashboard-item item-title="Top 10 Payables" panel-name="payables" on-dashboard-item-zoom="_onDashboardItemZoom">
+						<gnc-accounts-panel row-data="[[ accounts.topTenPayables ]]"></gnc-accounts-panel>
+					</gnc-dashboard-item>
+				</div>
+				<div class="flex-2 flex-veritcal">
+					<div class="flex-1">
+						<gnc-dashboard-item item-title="Issues" panel-name="issues" on-dashboard-item-zoom="_onDashboardItemZoom">
+							<gnc-issues-panel issues="[[ scenario.issues ]]"></gnc-issues-panel>
+						</gnc-dashboard-item>
+					</div>
+					<div class="flex-1">
+						<gnc-dashboard-item item-title="Recommendations" panel-name="recommendations" on-dashboard-item-zoom="_onDashboardItemZoom">
+							<gnc-recommendations-panel
+								recommendations="[[ scenario.recommendations.summary ]]">
+							</gnc-recommendations-panel>
+						</gnc-dashboard-item>
+					</div>
+				</div>
+	 		</div>
+		</div>
+		<paper-dialog
+				id="analysisview"
+				class="size-position"
+				role="alertdialog"
+				on-iron-overlay-closed="_dialogClosed">
+			<div class="dialog-close">
+				<paper-icon-button dialog-confirm autofocus icon="gnc-icons:close"></paper-icon-button>
+			</div>
+			<paper-tabs id="analysistabs" selected="{{ selectedAnalysisTab }}">
+				<paper-tab>KPIs</paper-tab>
+				<paper-tab>Issues &amp; opportunities</paper-tab>
+				<paper-tab>Recommendations</paper-tab>
+			</paper-tabs>
+			<paper-dialog-scrollable>
+				<iron-pages selected="{{ selectedAnalysisTab }}">
+					<gnc-kpi-detail kpis="[[ scenario.kpiReport ]]"></gnc-kpi-detail>
+					<gnc-issue-viewer issues="[[ scenario.issues ]]" selected-id="[[ selectedIssueId ]]"></gnc-issue-viewer>
+					<gnc-recommendation-viewer
+						recommendations="[[ scenario.recommendations.detail ]]"
+						selected-id="[[ selectedRecommendationId ]]">
+					</gnc-recommendation-viewer>
+				</iron-pages>
+			</paper-dialog-scrollable>
+		</paper-dialog>
+		<paper-dialog
+				id="actualsview"
+				class="size-position"
+				on-iron-overlay-closed="_dialogClosed"
+				role="alertdialog">
+				<div class="dialog-close">
+					<paper-icon-button dialog-confirm autofocus icon="gnc-icons:close"></paper-icon-button>
+				</div>
+				<paper-tabs id="actualstabs" selected="{{ selectedActualsTab }}">
+					<paper-tab>Liquidity forecast</paper-tab>
+					<paper-tab>Account receivables</paper-tab>
+					<paper-tab>Account payables</paper-tab>
+				</paper-tabs>
+				<paper-dialog-scrollable>
+					<iron-pages selected="{{ selectedActualsTab }}">
+						<gnc-liquidity-forecast
+						 	draw-graph="[[ graphStateZoom ]]"
+							forecast="[[ scenario.forecast ]]"
+							mode="zoomedin"
+							accounts="[[ accounts ]]">
+						</gnc-liquidity-forecast>
+						<gnc-accounts-detail row-data="[[ accounts.receivables ]]"></gnc-accounts-detail>
+						<gnc-accounts-detail row-data="[[ accounts.payables ]]"></gnc-accounts-detail>
+					</iron-pages>
+				</paper-dialog-scrollable>
+		</paper-dialog>
+		<rpc-client method="GetLatestScenario" on-rpc-result="_onScenarioReceived"></rpc-client>
+		<rpc-client method="GetAccounts" on-rpc-result="_onAccountModelReceived"></rpc-client>
+	</template>
+
+	<script>
+		class GncScenario extends Polymer.Element {
+			static get is() {
+				return 'gnc-scenario';
+			}
+			static get properties() {
+				return {
+					// private
+					accounts: Object,
+					showGraph: Boolean,
+					scenario: Object,
+					selectedAnalysisTab: Number,
+					selectedActualsTab: Number,
+					payables: Array,
+					receivables: Array,
+					top10payables: Array,
+					graphStateDash: String,
+					graphStateZoom: String
+				}
+			}
+			static get observers() {
+				return [
+					'_analysisTabChanged(selectedActualsTab)'
+				];
+			}
+			ready() {
+				super.ready();
+				this.showGraph = true;
+				this.graphStateZoom = 'no';
+				this.graphStateDash = 'yes';
+
+				this.selectedAnalysisTab = 1;
+				this.selectedActualsTab = 1;
+				this.$.actualsview.animationConfig = {
+					'entry': {
+						name: 'transform-animation',
+						node: this.$.actualsview,
+						transformFrom: 'translateY(100%)',
+						transformTo: 'translateY(0)'
+					},
+					'exit': {
+						name: 'transform-animation',
+						node: this.$.actualsview,
+						transformFrom: 'translateY(0)',
+						transformTo: 'translateY(100%)'
+					}
+				}
+				this.$.analysisview.animationConfig = {
+					'entry': {
+						name: 'transform-animation',
+						node: this.$.analysisview,
+						transformFrom: 'translateY(100%)',
+						transformTo: 'translateY(0)'
+					},
+					'exit': {
+						name: 'transform-animation',
+						node: this.$.analysisview,
+						transformFrom: 'translateY(0)',
+						transformTo: 'translateY(100%)'
+					}
+				}
+	    	}
+			_onDashboardItemZoom(ev) {
+				const panel = ev.detail.panel;
+				const tab = ['kpis', 'issues', 'recommendations', 'graph', 'receivables', 'payables'].indexOf(panel);
+				ev.preventDefault();
+				if (tab === -1) {
+					return;
+				}
+				// console.log('ev.detail.data', ev.detail.data);
+				this._dialogClosed();
+				//this.$.dashboard.setAttribute('class', 'hide');
+				this.zoomin = true;
+				this.graphStateDash = 'no';
+				this.dispatchEvent(new CustomEvent('zoom-changed', {
+					detail: panel
+				}));
+				if (tab < 3) {
+					this.selectedAnalysisTab = tab;
+					this.$.analysisview.open();
+					return;
+				}
+				if (tab === 3) {
+					this.graphStateZoom = 'yes';
+				}
+				this.selectedActualsTab = tab - 3;
+				this.$.actualsview.open();
+			}
+			_dialogClosed() {
+				//this.$.dashboard.setAttribute('class', '');
+				this.zoomin = false;
+				this.graphStateZoom = 'no';
+				this.graphStateDash = 'yes';
+				this.dispatchEvent(new CustomEvent('zoom-changed', {
+					detail: ''
+				}));
+			}
+			_onScenarioReceived(ev) {
+				const series = ev.detail.forecast.valuesByDay;
+				const numpoints = 30;
+				// const longestSeriesLength = Math.min(30, series.liquidity.length, series.payables.length, series.receivables.length);
+				// const truncatedSeries = {
+				// 	liquidity: [],
+				// 	payables: [],
+				// 	receivables: []
+				// };
+				// for (let i = 0; i < longestSeriesLength; i++) {
+				// 	truncatedSeries.liquidity.push(series.liquidity[i]);
+				// 	truncatedSeries.payables.push(series.payables[i]);
+				// 	truncatedSeries.receivables.push(series.receivables[i]);
+				// }
+//				ev.detail.forecast.valuesByDay = truncatedSeries;
+				this.scenario = ev.detail;
+			}
+			_onAccountModelReceived(ev) {
+				this.accounts = ev.detail;
+			}
+			_analysisTabChanged(selectedActualsTab) {
+				if (selectedActualsTab === 0) {
+					this.graphStateZoom = 'yes';
+				} else {
+					this.graphStateZoom = 'no';
+				}
+			}
+		}
+
+		window.customElements.define(GncScenario.is, GncScenario);
+	</script>
+</dom-module>

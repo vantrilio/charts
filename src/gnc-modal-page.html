@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="gnc-modal-page">
+	<template>
+		<style include="paper-dialog-shared-styles"></style>
+	    <style include="shared-styles">
+	      :host {
+	        display: block;
+
+	        padding: 10px;
+	      }
+	    </style>
+		<slot></slot>
+	</template>
+
+	<script>
+		class GncModalPage extends Polymer.mixinBehaviors([Polymer.PaperDialogBehavior], Polymer.Element) {
+			static get is() {
+				return 'gnc-modal-page';
+			}
+		}
+
+		window.customElements.define(GncModalPage.is, GncModalPage);
+	</script>
+</dom-module>

@@ -1,0 +1,244 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<dom-module id="gnc-liquidity-graph4">
+	<template>
+		<link rel="stylesheet" href="/lib/c3.min.css">
+		<style>
+			:host {
+				display: block;
+			}
+			.c3 text {
+				font-family: "INGMe", Arial, sans-serif;
+				fill: var(--app-text-color);
+				font-size: 14px;
+			}
+			/* .c3 .tick {
+				stroke: #999;
+				opacity: .7;
+			} */
+			.c3 .axis--x path {
+			  /* display: none; */
+			}
+
+			.c3 .c3-axis-x path,
+			.c3 .c3-axis-x line {
+			    stroke: var(--app-muted-color);
+			}
+			.c3 .c3-axis-y path,
+			.c3 .c3-axis-y line {
+			    stroke: var(--app-muted-color);
+			}
+			.c3 .c3-line-Liquidity {
+				stroke-width: 1px;
+			}
+			.c3 .c3-xgrid, .c3 .c3-ygrid {
+				stroke-dasharray: 20 0;
+				stroke: var(--app-hairline-color);
+				stroke-width: 1px;
+			}
+			/* .c3-event-rects, .c3-legend-item {
+				display: none;
+			} */
+	    </style>
+	    <div id="svg" width="100%"></div>
+		<!-- <img id="img" width="600" height="360"> -->
+	</template>
+
+	<script>
+		var graphTimeout;
+
+		class GncLiquidityGraph4 extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior],
+			Polymer.MutableData(Polymer.Element)) {
+
+			static get is() {
+				return 'gnc-liquidity-graph4';
+			}
+			static get properties() {
+			 	return {
+			 		// attributes
+					graphData: {
+						type: Object,
+						observer: '_graphDataChanged'
+					},
+					graphHeight: Number,
+					graphStyle: String,
+					drawGraph: {
+						type: String,
+						observer: '_drawGraphChanged'
+					},
+					header: String,
+					seriesLabel: String,
+					yLabel: String
+			// 		seriesLabel: String,
+			// 		yLabel: String,
+			// 		url: {
+			// 			type: String,
+			// 			observer: '_urlChanged'
+			// 		}
+			 	}
+			}
+			static get observers() {
+				return [
+					'_seriesLabelChanged(seriesLabel)'
+				];
+			}
+			/*
+			 * Lifecycle functions
+			 */
+			connectedCallback() {
+				super.connectedCallback();
+				this.addEventListener('iron-resize', (ev) => {
+					if (this.drawGraph !== 'yes') {
+						return;
+					}
+					if (graphTimeout) {
+						Polymer.Async.timeOut.cancel(graphTimeout);
+					}
+					graphTimeout = Polymer.Async.timeOut.run(() => {
+						//this._drawGraphChanged('no');
+						//this._drawGraphChanged('yes');
+						//console.log('iron-resize', this.chart);
+						this._graphDataChanged(this.graphData);
+						if (!this.chart) {
+							return;
+						}
+						this.chart.resize({ width: this.offsetWidth, height: this.graphHeight });
+						Polymer.Async.timeOut.cancel(graphTimeout);
+					}, 500);
+				});
+			}
+			ready() {
+				super.ready();
+			}
+			/*
+			 * observers
+			 */
+			_graphDataChanged(graphData) {
+				Polymer.Async.timeOut.run(() => {
+					if (this.drawGraph !== 'yes') {
+						return;
+					}
+					if (!this.chart) {
+						this.chart = this._generateGraph(graphData);
+						if (!this.chart) {return;}
+						this.$.svg.appendChild(this.chart.element);
+						this.chart.resize({ width: this.offsetWidth, height: this.graphHeight });
+
+						// this.chart.internal.main.on('click', function () {
+						  //console.log(d3.mouse(this));
+						// });
+						// d3.select(this.$.svg)
+						// 	.select('.' + c3.chart.internal.fn.CLASS.axisX)
+						// 	//.transition()
+						// 	.attr('transform', 'translate(' + 0 + ',' + this.chart.internal.y(0) + ')');
+					} else {
+						this.chart.axis.labels({
+							x: this.seriesLabel
+						});
+						this.chart.load({
+							unload: true,
+							columns: [
+								['Payables'].concat(graphData.payables),
+								['Receivables'].concat(graphData.receivables),
+								['Liquidity'].concat(graphData.liquidity)
+							]
+						});
+					}
+				}, 100);
+			}
+			_generateGraph(graphData) {
+				if (!graphData || !graphData.payables) {
+					return;
+				}
+				const startPeriod = graphData.startPeriod;
+				return c3.generate({
+					//bindto: this.$.svg,
+					padding: {
+						left: 60
+					},
+					data: {
+						columns: [
+							['Payables'].concat(graphData.payables),
+							['Receivables'].concat(graphData.receivables),
+							['Liquidity'].concat(graphData.liquidity)
+						],
+						type: 'bar',
+						types: {
+							Liquidity: 'line'
+						},
+						bar: {
+							width: {
+								ratio: 0.9
+							},
+							zerobased: true
+						},
+						colors: {
+							Receivables: '#93cfc4',
+							Payables: '#efc09b',
+							Liquidity: '#2E5573'
+						},
+						groups: [
+							['Receivables','Payables']
+						],
+						onclick: (ev) => {
+							this.dispatchEvent(
+								new CustomEvent('coordinate-selected', { detail: ev })
+							);
+						}
+					},
+					axis: {
+						y: {
+							label: {
+								text: 'Cash position (€)',
+								position: 'inner-top'
+							},
+							tick: {
+								format: d => d < 0 ? '(' + (d / -1000).toLocaleString('nl') + 'k)' : (d / 1000).toLocaleString('nl') + 'k'
+							}
+						},
+						x: {
+							label: {
+								text: this.seriesLabel,
+								position: 'outer-right'
+							},
+							tick: {
+								format: d => d + this.seriesLabel[0]
+							}
+						}
+					},
+					grid: {
+						x: {
+							show: true
+						},
+						y: {
+							show: true
+						}
+					// },
+					// legend: {
+					// 	item: {
+					// 		onclick: () => {}
+					// 	}
+					}
+				});
+			}
+			_drawGraphChanged(val) {
+				if (val !== 'yes') {
+					d3.select(this.$.svg.firstChild).remove();
+					this.chart && this.chart.unload();
+					this.chart = null;
+				} else {
+					if (this.graphData) {
+						this._graphDataChanged(this.graphData);
+					}
+				}
+			}
+			_seriesLabelChanged(newValue) {
+				if (!this.chart) {
+					return;
+				}
+				this._graphDataChanged(this.graphData);
+			}
+		}
+		window.customElements.define(GncLiquidityGraph4.is, GncLiquidityGraph4);
+	</script>
+</dom-module>

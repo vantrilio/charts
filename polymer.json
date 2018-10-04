@@ -1,0 +1,29 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/gnc-app.html",
+    "fragments": [
+        "src/gnc-privacy-statement.html",
+        "src/gnc-scenario.html",
+        "src/gnc-terms-and-conditions.html",
+        "src/gnc-view404.html",
+        "src/gnc-welcome.html"
+    ],
+    "sources": [
+        "images/**/*",
+        "src/**/*",
+        "lib/**/*"
+    ],
+    "extraDependencies": [
+        "bower_components/webcomponentsjs/*.js",
+        "!bower_components/webcomponentsjs/gulpfile.js",
+        "manifest.json",
+		"properties.json",
+        ".htaccess"
+    ],
+    "lint": {
+        "rules": ["polymer-2"]
+    },
+    "builds": [{
+        "preset": "es5-unbundled"
+    }]
+}
