@@ -50,6 +50,12 @@ var config = {
         stacked: true
       }]
     },
+    legend: {
+      position:"bottom",
+      labels: {
+      fontColor: 'rgba(46,85,115)'
+      }
+    },
     tooltips: {
      backgroundColor: '#FFF',
      titleFontSize: 16,
