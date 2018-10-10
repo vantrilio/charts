@@ -11,12 +11,12 @@ Chart.pluginService.register({
 var config = {
   type: 'bar',
   data: {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Nov", "Dec"],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [{
         type: 'line',
         lineTension: '0.3',
         label: "Prediction",
-        data: [, , , , , 50, 40, -30, -10, 0, 20],
+        data: [, , , , , 50, 40, -30, -10, 0, 20, 30],
         borderDash: [5, 5],
         borderWidth: 1,
         borderColor: 'rgba(46,85,115)'
@@ -32,12 +32,12 @@ var config = {
       type: 'bar',
       label: 'Payables',
       backgroundColor: 'rgba(111,207,195, 0.2)',
-      data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50, 50],
+      data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50, 50, 55],
     }, {
       type: 'bar',
       label: 'Receivables',
       backgroundColor: 'rgba(255,98,0, 0.2)',
-      data: [-65, -60, -80, -81, -56, -85, -90, -70, -40, -40, -30]
+      data: [-65, -60, -80, -81, -56, -85, -90, -70, -40, -40, -30, -25]
     }]
   },
   options: {
@@ -53,7 +53,7 @@ var config = {
     legend: {
       position:"bottom",
       labels: {
-      fontColor: 'rgba(46,85,115)'
+      fontColor: 'rgba(46,85,115)',
       }
     },
     tooltips: {
@@ -94,7 +94,7 @@ var config = {
             yMax: -100,
             xMin: "Jan" -1 ,
             xMax: "Jun",
-            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+            backgroundColor: 'rgba(0, 0, 0, .08)',
          }]
       }
   }
