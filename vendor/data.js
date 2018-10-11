@@ -19,24 +19,24 @@ var config = {
         data: [, , , , , 50, 40, -30, -10, 0, 20, 30],
         borderDash: [5, 5],
         borderWidth: 1,
-        borderColor: 'rgba(46,85,115)'
+        borderColor: '#2E5573'
     },
       {
       type: 'line',
       lineTension: '0.3',
       label: 'Liquidity',
       data: [40, 50, 40, 30, 55, 0 ],
-      borderColor: 'rgba(46,85,115)',
+      borderColor: '#2E5573',
       fill: false
     }, {
       type: 'bar',
       label: 'Payables',
-      backgroundColor: 'rgba(111,207,195, 0.2)',
+      backgroundColor: '#6FCFC345',
       data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50, 50, 55],
     }, {
       type: 'bar',
       label: 'Receivables',
-      backgroundColor: 'rgba(255,98,0, 0.2)',
+      backgroundColor: '#FF620045',
       data: [-65, -60, -80, -81, -56, -85, -90, -70, -40, -40, -30, -25]
     }]
   },
@@ -53,17 +53,17 @@ var config = {
     legend: {
       position:"bottom",
       labels: {
-      fontColor: 'rgba(46,85,115)',
+      fontColor: '#2E5573',
       }
     },
     tooltips: {
      backgroundColor: '#FFF',
      titleFontSize: 16,
-     titleFontColor: 'rgba(46,85,115)',
+     titleFontColor: '#2E5573',
      bodyFontColor: '#000',
      bodyFontSize: 14,
      width:10,
-     borderColor: 'rgba(46,85,115)',
+     borderColor: '#2E5573',
      borderWidth: 1,
      displayColors: false
    },
@@ -79,7 +79,7 @@ var config = {
         mode: 'horizontal',
         scaleID: 'y-axis-0',
         value: -50,
-        borderColor: 'rgb(255,98,0)',
+        borderColor: '#FF6200',
         borderWidth: 2,
         label: {
           enabled: false,
