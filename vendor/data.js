@@ -54,7 +54,7 @@ var config = {
       position:"bottom",
       labels: {
       fontColor: '#2E5573',
-      fontStyle: 800,
+      fontStyle: 600,
       }
     },
     tooltips: {
@@ -63,6 +63,7 @@ var config = {
      titleFontColor: 'rgba(46,85,115)',
      bodyFontColor: '#000',
      bodyFontSize: 14,
+     fontStyle: 600,
      width:10,
      borderColor: 'rgba(46,85,115)',
      borderWidth: 1,
