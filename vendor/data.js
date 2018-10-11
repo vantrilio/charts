@@ -31,12 +31,12 @@ var config = {
     }, {
       type: 'bar',
       label: 'Payables',
-      backgroundColor: '#6FCFC345',
+      backgroundColor: 'rgba(111,207,195, 0.2)',
       data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50, 50, 55],
     }, {
       type: 'bar',
       label: 'Receivables',
-      backgroundColor: '#FF620045',
+      backgroundColor: 'rgba(255,98,0, 0.2)',
       data: [-65, -60, -80, -81, -56, -85, -90, -70, -40, -40, -30, -25]
     }]
   },
@@ -54,16 +54,17 @@ var config = {
       position:"bottom",
       labels: {
       fontColor: '#2E5573',
+      fontStyle: 800,
       }
     },
     tooltips: {
      backgroundColor: '#FFF',
      titleFontSize: 16,
-     titleFontColor: '#2E5573',
+     titleFontColor: 'rgba(46,85,115)',
      bodyFontColor: '#000',
      bodyFontSize: 14,
      width:10,
-     borderColor: '#2E5573',
+     borderColor: 'rgba(46,85,115)',
      borderWidth: 1,
      displayColors: false
    },
@@ -79,7 +80,7 @@ var config = {
         mode: 'horizontal',
         scaleID: 'y-axis-0',
         value: -50,
-        borderColor: '#FF6200',
+        borderColor: 'rgb(255,98,0)',
         borderWidth: 2,
         label: {
           enabled: false,
