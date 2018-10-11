@@ -4,9 +4,10 @@ alert.src = 'https://vantrilio.github.io/charts/vendor/img/alert.png';
 Chart.pluginService.register({
     afterUpdate: function(chart) {
         chart.config.data.datasets[0]._meta[0].data[7]._model.pointStyle = alert;
-
     }
 });
+
+
 
 window.chartColors = {
   white: '#fff',
@@ -54,13 +55,19 @@ var config = {
     }]
   },
   options: {
+
     scales: {
+      pointLabels :{
+               fontStyle: "bold",
+            },
       xAxes: [{
         stacked: true,
-        barPercentage: 0.5
+        barPercentage: 0.6,
+        fontStyle: 'bold'
       }],
       yAxes: [{
-        stacked: true
+        stacked: true,
+        fontStyle: "bold"
       }]
     },
     legend: {
