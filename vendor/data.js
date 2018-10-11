@@ -72,16 +72,18 @@ var config = {
         fontSize: 80,
         ticks: {
                 fontFamily: "Verdana",
-                fontStyle: 400
+                fontStyle: 400,
+
             }
       }]
     },
     legend: {
       position:"bottom",
       labels: {
-      fontColor: '#2E5573',
-      fontFamily: "Verdana",
-      fontStyle: 400
+        fontColor: '#2E5573',
+        fontFamily: "Verdana",
+        fontStyle: 400,
+        padding: 40
       }
     },
     tooltips: {
