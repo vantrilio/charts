@@ -8,6 +8,15 @@ Chart.pluginService.register({
     }
 });
 
+window.chartColors = {
+  white: '#fff',
+  orange: 'rgb(255,98,0)',
+  blue: '#2E5573',
+  lightgreen: 'rgba(111,207,195, 0.2)',
+  lightred: 'rgba(255,98,0, 0.2)',
+  grey: 'rgb(255,98,0)'
+};
+
 var config = {
   type: 'bar',
   data: {
@@ -18,25 +27,29 @@ var config = {
         label: "Prediction",
         data: [, , , , , 50, 40, -30, -10, 0, 20, 30],
         borderDash: [5, 5],
-        borderWidth: 1,
-        borderColor: '#2E5573'
+        borderWidth: 2,
+        backgroundColor: window.chartColors.white,
+        borderColor: window.chartColors.blue
     },
       {
       type: 'line',
       lineTension: '0.3',
       label: 'Liquidity',
       data: [40, 50, 40, 30, 55, 0 ],
-      borderColor: '#2E5573',
+      backgroundColor: window.chartColors.white,
+      borderColor: window.chartColors.blue,
       fill: false
     }, {
       type: 'bar',
       label: 'Payables',
-      backgroundColor: 'rgba(111,207,195, 0.2)',
+      backgroundColor: window.chartColors.lightgreen,
+      borderColor: window.chartColors.white,
       data: [65, 40, 80, 81, 56, 85, 40, 30, 40, 50, 50, 55],
     }, {
       type: 'bar',
       label: 'Receivables',
-      backgroundColor: 'rgba(255,98,0, 0.2)',
+      backgroundColor: window.chartColors.lightred,
+      borderColor: window.chartColors.white,
       data: [-65, -60, -80, -81, -56, -85, -90, -70, -40, -40, -30, -25]
     }]
   },
@@ -103,4 +116,18 @@ var config = {
 };
 
 var ctx = document.getElementById("myChart").getContext("2d");
-new Chart(ctx, config);
+var myLine = new Chart(ctx, config);
+
+document.getElementById("myChart").onclick = function(evt) {
+  var activePoint = myLine.getElementAtEvent(event);
+
+  // make sure click was on an actual point
+  if (activePoint.length > 0) {
+    var clickedDatasetIndex = activePoint[0]._datasetIndex;
+    var clickedElementindex = activePoint[0]._index;
+    var label = myLine.data.labels[clickedElementindex];
+    var value = myLine.data.datasets[clickedDatasetIndex].data[clickedElementindex];
+    // console.log("Clicked: " + label + " - " + value);
+    window.location.replace("#" + "/" + label + value);
+  }
+};
