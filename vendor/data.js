@@ -57,17 +57,23 @@ var config = {
   options: {
 
     scales: {
-      pointLabels :{
-               fontStyle: "bold",
-            },
       xAxes: [{
         stacked: true,
         barPercentage: 0.6,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
+        ticks: {
+                fontFamily: "Verdana",
+                fontStyle: 600
+            }
       }],
       yAxes: [{
         stacked: true,
-        fontStyle: "bold"
+        fontStyle: "bold",
+        fontSize: 80,
+        ticks: {
+                fontFamily: "Verdana",
+                fontStyle: 400
+            }
       }]
     },
     legend: {
