@@ -11,6 +11,7 @@ Chart.pluginService.register({
 
 window.chartColors = {
   white: '#fff',
+  black: '#333',
   orange: 'rgb(255,98,0)',
   blue: '#2E5573',
   lightgreen: 'rgba(111,207,195, 0.2)',
@@ -39,6 +40,7 @@ var config = {
       data: [40, 50, 40, 30, 55, 0 ],
       backgroundColor: window.chartColors.white,
       borderColor: window.chartColors.blue,
+      borderWidth: 3,
       fill: false
     }, {
       type: 'bar',
@@ -77,6 +79,13 @@ var config = {
             }
       }]
     },
+    hover: {
+         onHover: function(e) {
+            var point = this.getElementAtEvent(e);
+            if (point.length) e.target.style.cursor = 'pointer';
+            else e.target.style.cursor = 'default';
+         }
+      },
     legend: {
       position:"bottom",
       labels: {
@@ -84,18 +93,21 @@ var config = {
         fontFamily: "Verdana",
         fontStyle: 400,
         padding: 40
-      }
+      },
+      onHover: function(e) {
+            e.target.style.cursor = 'pointer';
+         }
     },
     tooltips: {
      backgroundColor: '#FFF',
      titleFontSize: 16,
-     titleFontColor: 'rgba(46,85,115)',
-     bodyFontColor: '#000',
+     titleFontColor: window.chartColors.blue,
+     bodyFontColor: window.chartColors.black,
      bodyFontSize: 14,
      fontFamily: "Verdana",
      fontStyle: 400,
      width:10,
-     borderColor: 'rgba(46,85,115)',
+     borderColor: window.chartColors.blue,
      borderWidth: 1,
      displayColors: false
    },
