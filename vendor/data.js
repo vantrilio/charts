@@ -27,7 +27,7 @@ var config = {
         type: 'line',
         lineTension: '0.3',
         label: "Prediction",
-        data: [, , , , , 50, 40, -30, -10, 0, 20, 30],
+        data: [, , , , ,50, 40, -30, -10, 0, 20, 30],
         borderDash: [5, 5],
         borderWidth: 2,
         backgroundColor: window.chartColors.white,
